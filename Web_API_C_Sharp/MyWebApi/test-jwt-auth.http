@@ -1,0 +1,115 @@
+### ==========================================
+### JWT Authentication với HASH PASSWORD - CHUYÊN NGHIỆP
+### ==========================================
+
+@baseUrl = http://localhost:5231
+
+### 1. Đăng ký user mới (password sẽ được hash tự động)
+POST {{baseUrl}}/api/user/register
+Content-Type: application/json
+
+{
+    "userName": "testuser",
+    "password": "123456",
+    "email": "test@example.com",
+    "fullName": "Test User"
+}
+
+### 2. Đăng nhập với admin (password được hash)
+# Username: admin, Password: admin123 (đã hash trong database)
+POST {{baseUrl}}/api/user/login
+Content-Type: application/json
+
+{
+    "userName": "admin",
+    "password": "admin123"
+}
+
+### 3. Đăng nhập với user vừa tạo
+POST {{baseUrl}}/api/user/login
+Content-Type: application/json
+
+{
+    "userName": "testuser",
+    "password": "123456"
+}
+
+### ==========================================
+### SỬ DỤNG TOKEN (Thay YOUR_TOKEN và YOUR_REFRESH_TOKEN)
+### ==========================================
+
+@accessToken = YOUR_ACCESS_TOKEN_HERE
+@refreshToken = YOUR_REFRESH_TOKEN_HERE
+
+### 4. Lấy profile user (cần đăng nhập)
+GET {{baseUrl}}/api/user/profile
+Authorization: Bearer {{accessToken}}
+
+### 5. Lấy danh sách tất cả users (chỉ Admin)
+GET {{baseUrl}}/api/user/all
+Authorization: Bearer {{accessToken}}
+
+### 6. Refresh token (khi access token hết hạn sau 5 phút)
+POST {{baseUrl}}/api/user/refresh-token
+Content-Type: application/json
+
+{
+    "refreshToken": "{{refreshToken}}"
+}
+
+### 7. Gán role Manager cho user (chỉ Admin)
+POST {{baseUrl}}/api/user/assign-role
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "userId": 2,
+    "roleName": "Manager"
+}
+
+### ==========================================
+### Test Authorization trong TestController
+### ==========================================
+
+### 8. API public (không cần token)
+GET {{baseUrl}}/api/test/public
+
+### 9. API protected (cần token)
+GET {{baseUrl}}/api/test/protected
+Authorization: Bearer {{accessToken}}
+
+### 10. API chỉ dành cho Admin
+GET {{baseUrl}}/api/test/admin-only
+Authorization: Bearer {{accessToken}}
+
+### ==========================================
+### Test Security Features
+### ==========================================
+
+### 11. Test đăng nhập sai password (401 Unauthorized)
+POST {{baseUrl}}/api/user/login
+Content-Type: application/json
+
+{
+    "userName": "admin",
+    "password": "wrongpassword"
+}
+
+### 12. Test đăng ký với email trùng (400 Bad Request)
+POST {{baseUrl}}/api/user/register
+Content-Type: application/json
+
+{
+    "userName": "testuser2",
+    "password": "123456",
+    "email": "admin@example.com",
+    "fullName": "Test User 2"
+}
+
+### 13. Test refresh token không hợp lệ (401 Unauthorized)
+POST {{baseUrl}}/api/user/refresh-token
+Content-Type: application/json
+
+{
+    "refreshToken": "invalid_refresh_token"
+}
