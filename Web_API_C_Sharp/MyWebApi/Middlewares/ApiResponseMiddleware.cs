@@ -113,6 +113,30 @@ namespace MyWebApi.Middlewares
             context.Response.Body = originalStream;
             _logger.LogError(exception, "Exception occurred: {Message}", exception.Message);
 
+            if (exception is AiProviderException aiEx)
+            {
+                context.Response.StatusCode = aiEx.StatusCode;
+                var aiResponse = new
+                {
+                    success = false,
+                    error = new { code = aiEx.ErrorCode, message = aiEx.Message }
+                };
+                await WriteJsonResponse(context, JsonSerializer.Serialize(aiResponse, JsonOptions));
+                return;
+            }
+
+            if (exception is RateLimitException rlEx)
+            {
+                context.Response.StatusCode = 429;
+                var rlResponse = new
+                {
+                    success = false,
+                    error = new { code = "RATE_LIMIT_EXCEEDED", message = rlEx.Message }
+                };
+                await WriteJsonResponse(context, JsonSerializer.Serialize(rlResponse, JsonOptions));
+                return;
+            }
+
             var (statusCode, message, errors) = GetErrorDetails(exception);
             context.Response.StatusCode = statusCode;
 

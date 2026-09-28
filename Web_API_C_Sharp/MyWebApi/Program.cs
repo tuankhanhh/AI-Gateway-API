@@ -5,6 +5,9 @@ using Microsoft.IdentityModel.Tokens;
 using MyWebApi.Models;
 using MyWebApi.Service;
 using MyWebApi.Repository;
+using MyWebApi.Providers.Interfaces;
+using MyWebApi.Providers.OpenAI;
+using MyWebApi.Providers.Gemini;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -119,9 +122,11 @@ builder.Services.AddScoped<IPasswordService, PasswordService>();
 // Sau này thêm các service của AI Gateway tại đây:
 //
 builder.Services.AddScoped<IAuthService, AuthService>();
-// builder.Services.AddScoped<IAiService, AiService>();
-// builder.Services.AddScoped<IConversationService, ConversationService>();
-// builder.Services.AddScoped<IUsageService, UsageService>();
+builder.Services.AddScoped<IAiService, AiService>();
+builder.Services.AddScoped<IConversationService, ConversationService>();
+builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddScoped<IUsageService, UsageService>();
+builder.Services.AddMemoryCache();
 
 
 //
@@ -134,9 +139,9 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 //
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
-// builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
-// builder.Services.AddScoped<IMessageRepository, MessageRepository>();
-// builder.Services.AddScoped<IAiRequestLogRepository, AiRequestLogRepository>();
+builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
+builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+builder.Services.AddScoped<IAiRequestLogRepository, AiRequestLogRepository>();
 
 
 //
@@ -147,12 +152,13 @@ builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
 // Đây là phần đặc trưng của AI Gateway.
 //
-// Sau này:
-//
 // builder.Services.AddHttpClient<OpenAIProvider>();
 //
 // builder.Services.AddScoped<ILLMProvider, OpenAIProvider>();
 //
+
+builder.Services.AddHttpClient<GeminiProvider>();
+builder.Services.AddScoped<ILLMProvider, GeminiProvider>();
 // Không đăng ký khi OpenAIProvider chưa được tạo.
 
 

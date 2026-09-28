@@ -101,3 +101,5 @@ CREATE INDEX IX_AiRequestLogs_Status_RequestedAt ON AiRequestLogs(Status, Reques
 CREATE INDEX IX_AiRequestLogs_ConversationId ON AiRequestLogs(ConversationId);
 
 Select * from Users
+Select * from Conversations
+Select * from Messages

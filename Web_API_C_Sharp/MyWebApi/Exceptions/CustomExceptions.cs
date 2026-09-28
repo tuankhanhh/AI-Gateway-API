@@ -35,4 +35,21 @@ namespace MyWebApi.Exceptions
             Errors = errors;
         }
     }
+
+    public class AiProviderException : Exception
+    {
+        public int StatusCode { get; }
+        public string ErrorCode { get; }
+
+        public AiProviderException(int statusCode, string errorCode, string message) : base(message)
+        {
+            StatusCode = statusCode;
+            ErrorCode = errorCode;
+        }
+    }
+
+    public class RateLimitException : Exception
+    {
+        public RateLimitException(string message) : base(message) { }
+    }
 }
