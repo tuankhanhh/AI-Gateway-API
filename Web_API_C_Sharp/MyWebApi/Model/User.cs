@@ -17,7 +17,7 @@ public partial class User
     [Unicode(false)]
     public string Email { get; set; } = null!;
 
-    [StringLength(500)]
+    [StringLength(50)]
     [Unicode(false)]
     public string PasswordHash { get; set; } = null!;
 

@@ -66,5 +66,33 @@ namespace MyWebApi.Controllers
                 return StatusCode(500, new { message = "Internal Server Error", details = ex.Message });
             }
         }
+
+        [HttpPost("analyze")]
+        public async Task<IActionResult> Analyze([FromBody] AnalyzeRequestDto request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var userId = GetCurrentUserId();
+                var response = await _aiService.AnalyzeAsync(userId, request);
+                return Ok(response);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("OpenAI API error"))
+                {
+                    return StatusCode(502, new { message = "Error communicating with AI Provider", details = ex.Message });
+                }
+                return StatusCode(500, new { message = "Internal Server Error", details = ex.Message });
+            }
+        }
     }
 }

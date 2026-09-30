@@ -15,7 +15,7 @@ GO
 CREATE TABLE Users (
     Id int IDENTITY(1,1) PRIMARY KEY,
     Email varchar(255) NOT NULL UNIQUE,
-    PasswordHash varchar(500) NOT NULL,
+    PasswordHash varchar(50) NOT NULL,
     FullName nvarchar(150) NOT NULL,
     Status varchar(20) NOT NULL DEFAULT 'Active',
     CreatedAt datetime2 NOT NULL DEFAULT GETUTCDATE()
@@ -101,5 +101,7 @@ CREATE INDEX IX_AiRequestLogs_Status_RequestedAt ON AiRequestLogs(Status, Reques
 CREATE INDEX IX_AiRequestLogs_ConversationId ON AiRequestLogs(ConversationId);
 
 Select * from Users
+Select * from RefreshTokens
 Select * from Conversations
+Select * from AiRequestLogs
 Select * from Messages
